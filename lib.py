@@ -81,7 +81,7 @@ class neuron:
 				for x2 in range(10):
 					for y2 in range(10):
 						val += self.array[0][x1][y1][x2][y2] * (SURF.get_at((x1 * 10 + x2, y1 * 10 + y2)).r) / 255
-				res += self.array[1][x1][y1] * activate(val / 100)
+				res += self.array[1][x1][y1] * activate(val / 100, 4)
 		return activate(res)
 	def copy(self):
 		res = neuron()

@@ -7,11 +7,6 @@ except:
 	lib.install("pygame") # bad code )
 	from pygame import *
 
-try:
-	source = [map(float, i.split()) for i in open("storage/p1/source.txt")]
-except:
-	source = []
-
 init()
 inf = display.Info()
 ix, iy = inf.current_w, inf.current_h
@@ -27,6 +22,8 @@ font.init()
 FONT = font.Font(None, font_size)
 def font_update():
 	FONT = font.Font(None, int(font_size * zoom))
+text = [FONT.render(i, True, (127,127,191)) for i in ["Generating, wait...", "Done, press 'esc'"]]
+text_pos = [i.get_rect(center=(dx / 2, dy / 2)) for i in text]
 
 surf = Surface((100, 100))
 pos = center.copy()
@@ -58,15 +55,11 @@ for i in range(1000):
 	q = transform.scale(surf, (scale * zoom, scale * zoom))
 	dis.blit(q, pos - Vector2(q.get_size()) / 2)
 	draw.lines(dis, border_color, True, border)
+	dis.blit(text[0], text_pos[0])
 	display.update()
 	event.pump()
 FILE.close()
 print("finish")
-
-def draw_info():
-	source_info = source(int(file_name))
-	info_render = FONT.render(f"{file_name}.png (100 x 100) real:{source_info}", True, info_color)
-	
 
 loop = True
 while loop:
