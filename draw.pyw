@@ -131,18 +131,30 @@ def learn():
 		x2 = randint(0,9)
 		y2 = randint(0,9)
 		_recover = float(brain.array[0][x1][y1][x2][y2]) + 0.0000000001
-		brain.array[0][x1][y1][x2][y2] = lib.clamp(brain.array[0][x1][y1][x2][y2] + uniform(-0.1, 0.1), -1, 1)
+		brain.array[0][x1][y1][x2][y2] = uniform(-1, 1)#lib.clamp(brain.array[0][x1][y1][x2][y2] + uniform(-0.1, 0.1), -1, 1)
 		use_brain(True)
 		new_error = (ai_result_x - source_info[0]) ** 2# + (ai_result_y - source_info[1]) ** 2
 		if new_error > last_error:
 			brain.array[0][x1][y1][x2][y2] = _recover
 	else:
 		_recover = float(brain.array[1][x1][y1]) + 0.0000000001
-		brain.array[1][x1][y1] = lib.clamp(brain.array[1][x1][y1] + uniform(-0.1, 0.1), -1, 1)
+		brain.array[1][x1][y1] = uniform(-1,1)#lib.clamp(brain.array[1][x1][y1] + uniform(-0.1, 0.1), -1, 1)
 		use_brain(True)
 		new_error = (ai_result_x - source_info[0]) ** 2# + (ai_result_y - source_info[1]) ** 2
 		if new_error > last_error:
 			brain.array[1][x1][y1] = _recover
+
+def learn2():
+	global brain
+	source_info = source[int(file_name)]
+	use_brain()
+	last_error = (ai_result_x - source_info[0]) ** 2
+	_recover = brain.array.copy()
+	brain.random()
+	use_brain()
+	new_error = (ai_result_x - source_info[0]) ** 2
+	if new_error > last_error:
+		brain.array = _recover
 
 loop = True
 while loop:
@@ -153,6 +165,7 @@ while loop:
 	s = transform.scale(stat, (scale * zoom, scale * zoom))
 	dis.blit(s, pos - Vector2(s.get_size()) / 2 + Vector2(scale + 10, 0) * zoom)
 	
+	use_brain()
 	draw.line(dis, (255,0,0), pos - Vector2(q.get_size()) / 2 + Vector2(ai_result_pos_x * zoom, 0),
 		pos - Vector2(q.get_size()) / 2 + Vector2(ai_result_pos_x * zoom, scale * zoom))
 	#draw.line(dis, (0,62,255), pos - Vector2(q.get_size()) / 2 + Vector2(0, ai_result_pos_y * zoom),
@@ -164,12 +177,13 @@ while loop:
 	pressed_mouse = mouse.get_pressed(3)
 	mouse_pos = mouse.get_pos()
 
+	if not pause_learn:
+		for i in range(10):
+			learn()
+		use_brain()
 	if not pause:
 		file_name = str( (int(file_name) + 1) % 1000 )
 		update_surf()
-	if not pause_learn:
-		learn()
-		use_brain()
 
 	for e in event.get():
 		if e.type == WINDOWCLOSE:

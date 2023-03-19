@@ -36,13 +36,13 @@ backgroun_color = (31,31,31)
 info_color = (255,255,255)
 
 def p1():
-	FILL_COLOR = random.randint(0, 255)
+	FILL_COLOR = random.randint(127, 255)
 	surf.fill((FILL_COLOR, FILL_COLOR, FILL_COLOR))
 	SIZE = random.randint(10, 25)
 	POS = random.randint(SIZE + 1, 100 - SIZE - 1), random.randint(SIZE + 1, 100 - SIZE - 1)
-	COLOR = random.randint(0, 255)
+	COLOR = random.randint(0, 127)
 	while abs(FILL_COLOR - COLOR) < 64:
-		COLOR = random.randint(0, 255)
+		COLOR = random.randint(0, 127)
 	draw.rect(surf, (COLOR, COLOR, COLOR), [POS[0] - SIZE, POS[1] - SIZE, SIZE * 2, SIZE * 2])
 	return f"{(POS[0] / 50  - 1):0.2f} {(POS[1] / 50 - 1):0.2f} {SIZE / 50}"
 
