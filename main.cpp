@@ -1,8 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include <windows.h>
 #include <iostream>
-#include <fstream>
-#include <string>
 
 
 int rnd(int a, int b)
@@ -11,35 +8,40 @@ int rnd(int a, int b)
 }
 
 
-void generate()
+struct Asset
 {
-	CreateDirectory("C:\\A\\storage", NULL);
-	
-	std::ofstream source_file("C:\\A\\storage\\source.txt");
+	sf::Image image;
+	int x, y, size;
+	Asset(){};
+	Asset(sf::Image I, int X, int Y, int S)
+	{
+		image = I;
+		x = X; y = Y; size = S;
+	}
+};
+
+
+Asset generate()
+{	
 	sf::RenderTexture surface;
 	sf::RectangleShape rect;
 	int BACKGROUND, FILL_COLOR, SIZE, X, Y; // random values
 
+	BACKGROUND = rnd(159, 255);
+	FILL_COLOR = rnd(0, 95);
+	SIZE = rnd(10, 20) * 2;
+	X = rnd(SIZE, 100 - SIZE);
+	Y = rnd(SIZE, 100 - SIZE);
+	rect.setSize(sf::Vector2f(SIZE, SIZE));
+	rect.setPosition(sf::Vector2f(X, Y));
+	rect.setOrigin(sf::Vector2f(SIZE / 2, SIZE / 2));
+	rect.setFillColor(sf::Color(FILL_COLOR, FILL_COLOR, FILL_COLOR));
+	
 	surface.create(100, 100);
-	for (int i = 0; i < 1000; i++)
-	{
-		BACKGROUND = rnd(159, 255);
-		FILL_COLOR = rnd(0, 95);
-		SIZE = rnd(10, 20) * 2;
-		X = rnd(SIZE, 100 - SIZE);
-		Y = rnd(SIZE, 100 - SIZE);
-		rect.setSize(sf::Vector2f(SIZE, SIZE));
-		rect.setPosition(sf::Vector2f(X, Y));
-		rect.setOrigin(sf::Vector2f(SIZE / 2, SIZE / 2));
-		rect.setFillColor(sf::Color(FILL_COLOR, FILL_COLOR, FILL_COLOR));
-		surface.clear(sf::Color(BACKGROUND, BACKGROUND, BACKGROUND));
-		surface.draw(rect);
-		surface.getTexture().copyToImage().saveToFile("C:\\A\\storage\\" + std::to_string(i) + ".png");
-		source_file << X << " " << Y << " " << SIZE;
-		if (i != 999)
-			source_file << "/n";
-	}
-	source_file.close();
+	surface.clear(sf::Color(BACKGROUND, BACKGROUND, BACKGROUND));
+	surface.draw(rect);
+
+	return Asset(surface.getTexture().copyToImage(), X, Y, SIZE);
 }
 
 
@@ -49,9 +51,14 @@ public:
 	sf::VideoMode mode;
 	sf::RenderWindow window;
 	sf::Vector2f pos;
-	sf::RenderTexture texture;
+	Asset *source;
+	int source_length;
 	App();
-	void run();
+	void
+		draw_asset(),
+		new_source(),
+		run();
+	~App();
 };
 
 
@@ -60,6 +67,22 @@ App::App()
 	mode = sf::VideoMode(500, 500);
 	window.create(mode, "title");
 	window.setFramerateLimit(120);
+	source_length = 100;
+	new_source();
+}
+
+
+void draw_asset()
+{
+	// later
+}
+
+
+void App::new_source()
+{
+	source = new Asset[source_length];
+	for (int i = 0; i < source_length; i++)
+		source[i] = generate();
 }
 
 
@@ -79,9 +102,14 @@ void App::run()
 }
 
 
+App::~App()
+{
+	delete source;
+}
+
+
 int main()
 {
-	generate();
 	App my_app;
 	my_app.run();
 	return 0;
